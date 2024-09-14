@@ -1,43 +1,24 @@
-trigger:
-- '*'
+trigger: none
+pr:
+  branches:
+    include:
+      - main
+      - build-pipeline
 
 pool:
-  name: 'Default' # Replace Default with the name of your agent pool if you used a different pool3
-
-variables:
-  buildConfiguration: 'Release'
+  vmImage: 'ubuntu-latest'
 
 steps:
-- task: UseDotNet@2
-  displayName: 'Use .NET SDK 6.x'
-  inputs:
-    packageType: sdk
-    version: '6.x'
-
-- task: Npm@1
-  displayName: 'Run npm install'
-  inputs:
-    verbose: false
-
-- script: './node_modules/.bin/node-sass Tailspin.SpaceGame.Web/wwwroot --output Tailspin.SpaceGame.Web/wwwroot'
-  displayName: 'Compile Sass assets'
-
-- task: gulp@1
-  displayName: 'Run gulp tasks'
-
-- script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
-  displayName: 'Write build info'
-  workingDirectory: Tailspin.SpaceGame.Web/wwwroot
-
-- task: DotNetCoreCLI@2
-  displayName: 'Restore project dependencies'
-  inputs:
-    command: 'restore'
-    projects: '**/*.csproj'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Build the project - Release'
-  inputs:
-    command: 'build'
-    arguments: '--no-restore --configuration Release'
-    projects: '**/*.csproj'
+  - script: |
+      echo "Build.Repository.LocalPath " $(Build.Repository.LocalPath)
+      echo "Build.Repository.ID " $(Build.Repository.ID)
+      echo "Build.Repository.Name " $(Build.Repository.Name)
+      echo "..."
+      echo "System Vars"
+      echo ".. ."
+      echo "System.PullRequest.IsFork" $(System.PullRequest.IsFork)
+      echo "System.PullRequest.PullRequestId" $(System.PullRequest.PullRequestId)
+      echo "System.PullRequest.PullRequestNumber" $(System.PullRequest.PullRequestNumber)
+      echo "System.PullRequest.SourceBranch" $(System.PullRequest.SourceBranch)
+      echo "System.PullRequest.SourceRepositoryURI" $(System.PullRequest.SourceRepositoryURI)
+      echo "System.PullRequest.TargetBranch" $(System.PullRequest.TargetBranch)
